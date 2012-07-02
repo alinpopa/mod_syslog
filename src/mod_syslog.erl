@@ -72,7 +72,7 @@ remove_connection(_SID, JID, _Info) ->
 keyfind(Key, Position, []) -> false;
 keyfind(Key, Position, [Opt|T]) ->
     case lists:nth(Position, tuple_to_list(Opt)) of
-        Key -> true;
+        Key -> Opt;
         _ -> keyfind(Key, Position, T)
     end.
 
