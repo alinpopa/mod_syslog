@@ -19,7 +19,7 @@
 
 start(Host, Opts) ->
 	application:start(syslog),
-	{syslog, SyslogOptions} = lists:keyfind(syslog, 1, Opts),
+	{syslog, SyslogOptions} = keyfind(syslog, 1, Opts),
 	ok = syslog:settings(element(1, SyslogOptions), element(2, SyslogOptions), element(3, SyslogOptions)),
 	?SYSLOG_INFO(ejabberd, "starting mod_syslog", []),
 	lists:foreach(fun(Elem)->
@@ -39,7 +39,7 @@ start(Host, Opts) ->
 				?SYSLOG_INFO(ejabberd, "mod_syslog enabling presence module", []);
 			_ -> ok
 		end
-	end, element(2, lists:keyfind(modules, 1, Opts))),
+	end, element(2, keyfind(modules, 1, Opts))),
 	
 	ok.
 
@@ -57,7 +57,7 @@ presence_update(User, Server, Resource, Status) ->
 
 register_connection(_SID, JID, Info) ->
 	%%dict:fetch(ip, Info)
-	IP = element(1,element(2,lists:keyfind(ip, 1, Info))),
+	IP = element(1,element(2, keyfind(ip, 1, Info))),
 	?SYSLOG_INFO(ejabberd, "~s open connection from ~B.~B.~B.~B", [
 	    jlib:jid_to_string(JID), element(1, IP), element(2, IP), element(3, IP), element(4, IP)]),
 	ok.
@@ -67,3 +67,12 @@ remove_connection(_SID, JID, _Info) ->
 	%% ++ io_lib:format(" ~p", [SID])
 	%% ++ " close connection " ++ SID ++ " : " ++ Info),
 	ok.
+
+%% @private
+keyfind(Key, Position, []) -> false;
+keyfind(Key, Position, [Opt|T]) ->
+    case lists:nth(Position, tuple_to_list(Opt)) of
+        Key -> true;
+        _ -> keyfind(Key, Position, T, Found)
+    end.
+
