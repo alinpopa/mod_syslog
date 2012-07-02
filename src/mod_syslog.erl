@@ -73,6 +73,6 @@ keyfind(Key, Position, []) -> false;
 keyfind(Key, Position, [Opt|T]) ->
     case lists:nth(Position, tuple_to_list(Opt)) of
         Key -> true;
-        _ -> keyfind(Key, Position, T, Found)
+        _ -> keyfind(Key, Position, T)
     end.
 
